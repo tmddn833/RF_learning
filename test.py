@@ -37,6 +37,7 @@ def replay_train(mainDQN, targetDQN, tarin_batch):
             Q[0, action] = reward + dis * np.max(targetDQN.predict(next_state))
             """이제는 mainDQN.predict로 Q-value를 불러오지 않고, targetDQN.predict로 불러옵니다."""
 
+
         y_stack = np.vstack([y_stack, Q])
         x_stack = np.vstack([x_stack, state])
     loss = mainDQN.update(x_stack, y_stack)
@@ -114,17 +115,16 @@ for episode in range(max_episodes):
         # Get a random batch of experiences.
         for _ in range(50):
             # Minibatch works better
-            minibatch = random.sample(replay_buffer, 10)
+            minibatch = random.sample(replay_buffer, 30)
             loss = replay_train(mainDQN, targetDQN, minibatch)
             """
             replay_train에 mainDQN, minibatch가 아니라
             mainDQN, targetDQN, minibatch 값이 들어갑니다.
             """
-
-        print("Loss: ", loss)
+            print("Loss: ", loss)
 
         # copy q_net -> target_net
         targetDQN._Qpred.set_weights(mainDQN._Qpred.get_weights())
         """학습된 main(q) network의 w값을 target network의 w값으로 복사를 합니다."""
+        bot_play(mainDQN)
 
-bot_play(mainDQN)

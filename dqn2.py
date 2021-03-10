@@ -5,7 +5,7 @@ try to change the version of tensorflow and make it brand new!
 
 import numpy as np
 import tensorflow as tf
-
+tf.enable_eager_execution()
 from tensorflow.keras import Model
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Input
@@ -52,7 +52,9 @@ class DQN:
         # output_tensor = self._Qpred(input_tensor)
         # output_array = output_tensor.numpy()
         # return output_array
-        return self._Qpred.predict(x)
+        prediction = self._Qpred(x)
+
+        return prediction.numpy()
 
     def update(self, x_stack: np.ndarray, y_stack: np.ndarray) -> list:
         """Performs updates on given X and y and returns a result
@@ -63,6 +65,6 @@ class DQN:
             list: First element is loss, second element is a result from train step
         """
         self._Qpred.compile(loss='mse', optimizer='Adam')
-        history = self._Qpred.fit(x=x_stack, y=y_stack, verbose=None)
+        history = self._Qpred.fit(x=x_stack, y=y_stack, verbose=0)
         #print(history.history)
         return history.history['loss']
